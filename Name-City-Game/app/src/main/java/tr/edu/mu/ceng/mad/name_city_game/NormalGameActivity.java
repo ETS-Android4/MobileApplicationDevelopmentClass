@@ -29,8 +29,8 @@ public class NormalGameActivity extends AppCompatActivity {
             "tekirdag", "tokat", "trabzon", "tunceli", "usak", "van", "yalova", "yozgat", "zonguldak"
     };
     private Random rndCity, rndLetter;
-    private int rndCityNumber, rndLetterNumber;
-    private String currentCity, txtAnswerString = "", editTextUserGuess;
+    private int rndCityNumber, rndLetterNumber, startingLetterNumber;
+    private String currentCity, txtAnswerString, editTextUserGuess;
     private ArrayList<Character> currentCityChar;
 
     @Override
@@ -43,24 +43,7 @@ public class NormalGameActivity extends AppCompatActivity {
         editTextGuess = findViewById(R.id.editTextGuess_normal);
 
         rndLetter = new Random();
-        rndCity = new Random();
-        rndCityNumber = rndCity.nextInt(cities.length);
-        currentCity = cities[rndCityNumber];
-        txtCity.setText("City composed of " +currentCity.length() + " words");
-
-        for(int i = 0; i < currentCity.length(); i++){
-            if(i < currentCity.length() - 1){
-                txtAnswerString += "_ ";
-            }else{
-                txtAnswerString += "_";
-            }
-        }
-        txtAnswer.setText(txtAnswerString);
-        currentCityChar = new ArrayList<>();
-
-        for (char c: currentCity.toCharArray()) {
-            currentCityChar.add(c);
-        }
+        createWord();
     }
 
 
@@ -69,9 +52,10 @@ public class NormalGameActivity extends AppCompatActivity {
 
         if(!TextUtils.isEmpty(editTextUserGuess)){
             if(editTextUserGuess.equals(currentCity)){
-
+                editTextGuess.setText("");
+                createWord();
             }else{
-
+                System.out.println("bitmedi");
             }
         }
     }
@@ -99,6 +83,39 @@ public class NormalGameActivity extends AppCompatActivity {
             }
             txtAnswer.setText(txtAnswerString);
             currentCityChar.remove(rndLetterNumber);
+        }
+    }
+    private void createWord(){
+        txtAnswerString = "";
+        rndCity = new Random();
+        rndCityNumber = rndCity.nextInt(cities.length);
+        currentCity = cities[rndCityNumber];
+        txtCity.setText("City composed of " +currentCity.length() + " words");
+
+        if(currentCity.length() >= 5 && currentCity.length() <= 7){
+            startingLetterNumber = 1;
+        }else if(currentCity.length() >= 8 && currentCity.length() < 10){
+            startingLetterNumber = 2;
+        }else{
+            startingLetterNumber = 3;
+        }
+
+        for(int i = 0; i < currentCity.length(); i++){
+            if(i < currentCity.length() - 1){
+                txtAnswerString += "_ ";
+            }else{
+                txtAnswerString += "_";
+            }
+        }
+        txtAnswer.setText(txtAnswerString);
+        currentCityChar = new ArrayList<>();
+
+        for (char c: currentCity.toCharArray()) {
+            currentCityChar.add(c);
+        }
+
+        for (int c = 0; c < startingLetterNumber; c++){
+
         }
     }
 }
