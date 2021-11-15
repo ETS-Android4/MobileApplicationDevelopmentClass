@@ -3,6 +3,7 @@ package tr.edu.mu.ceng.mad.name_city_game;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,7 +30,7 @@ public class NormalGameActivity extends AppCompatActivity {
     };
     private Random rndCity, rndLetter;
     private int rndCityNumber, rndLetterNumber;
-    private String currentCity, txtAnswerString = "";
+    private String currentCity, txtAnswerString = "", editTextUserGuess;
     private ArrayList<Character> currentCityChar;
 
     @Override
@@ -64,12 +65,39 @@ public class NormalGameActivity extends AppCompatActivity {
 
 
     public void btnGuess(View v){
+        editTextUserGuess = editTextGuess.getText().toString();
 
+        if(!TextUtils.isEmpty(editTextUserGuess)){
+            if(editTextUserGuess.equals(currentCity)){
+
+            }else{
+
+            }
+        }
     }
 
     public void btnLetter(View v){
         if(currentCityChar.size() > 0){
             rndLetterNumber = rndLetter.nextInt(currentCityChar.size());
+            String[] txtLetters = txtAnswer.getText().toString().split(" ");
+            char[] currentCityLetters = currentCity.toCharArray();
+
+            for(int i = 0; i< currentCity.length(); i++){
+                if(txtLetters[i].equals("_") && currentCityLetters[i] == currentCityChar.get(rndLetterNumber)){
+                    txtLetters[i] = String.valueOf(currentCityChar.get(rndLetterNumber));
+                    txtAnswerString = "";
+
+                    for(int j = 0; j < currentCity.length(); j++){
+                        if(j == i || j < currentCity.length() - 1){
+                            txtAnswerString += txtLetters[j] + " ";
+                        }else{
+                            txtAnswerString += txtLetters[j];
+                        }
+                    }
+                    break;
+                }
+            }
+            txtAnswer.setText(txtAnswerString);
             currentCityChar.remove(rndLetterNumber);
         }
     }
