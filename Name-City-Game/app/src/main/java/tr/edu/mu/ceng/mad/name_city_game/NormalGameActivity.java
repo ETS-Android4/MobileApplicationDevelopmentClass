@@ -7,12 +7,13 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class NormalGameActivity extends AppCompatActivity {
-    private TextView txtCity, txtAnswer;
+    private TextView txtCity, txtAnswer, txtTotalPoints;
     private EditText editTextGuess;
 
     private String[] cities = {
@@ -32,6 +33,7 @@ public class NormalGameActivity extends AppCompatActivity {
     private int rndCityNumber, rndLetterNumber, startingLetterNumber;
     private String currentCity, txtAnswerString, editTextUserGuess;
     private ArrayList<Character> currentCityChar;
+    private float maxPoints = 100.0f, pointsToBreak, totalPoints = 0, levelTotalPoints = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class NormalGameActivity extends AppCompatActivity {
         txtCity = findViewById(R.id.txtCity_normal);
         txtAnswer = findViewById(R.id.txtAnswer_normal);
         editTextGuess = findViewById(R.id.editTextGuess_normal);
+        txtTotalPoints = findViewById(R.id.txtTotalPoints_normal);
 
         rndLetter = new Random();
         createWord();
@@ -52,37 +55,22 @@ public class NormalGameActivity extends AppCompatActivity {
 
         if(!TextUtils.isEmpty(editTextUserGuess)){
             if(editTextUserGuess.equals(currentCity)){
+                levelTotalPoints += totalPoints;
+                Toast.makeText(NormalGameActivity.this, "Congratulations! Correct Answer", Toast.LENGTH_SHORT).show();
+                txtTotalPoints.setText("Total Points : " + levelTotalPoints);
                 editTextGuess.setText("");
                 createWord();
             }else{
-                System.out.println("bitmedi");
+
             }
         }
     }
 
     public void btnLetter(View v){
         if(currentCityChar.size() > 0){
-            rndLetterNumber = rndLetter.nextInt(currentCityChar.size());
-            String[] txtLetters = txtAnswer.getText().toString().split(" ");
-            char[] currentCityLetters = currentCity.toCharArray();
-
-            for(int i = 0; i< currentCity.length(); i++){
-                if(txtLetters[i].equals("_") && currentCityLetters[i] == currentCityChar.get(rndLetterNumber)){
-                    txtLetters[i] = String.valueOf(currentCityChar.get(rndLetterNumber));
-                    txtAnswerString = "";
-
-                    for(int j = 0; j < currentCity.length(); j++){
-                        if(j == i || j < currentCity.length() - 1){
-                            txtAnswerString += txtLetters[j] + " ";
-                        }else{
-                            txtAnswerString += txtLetters[j];
-                        }
-                    }
-                    break;
-                }
-            }
-            txtAnswer.setText(txtAnswerString);
-            currentCityChar.remove(rndLetterNumber);
+            takeRandomLetter();
+            totalPoints -= pointsToBreak;
+            Toast.makeText(NormalGameActivity.this, "Remaining points = " + totalPoints, Toast.LENGTH_SHORT).show(); 
         }
     }
     private void createWord(){
@@ -96,8 +84,10 @@ public class NormalGameActivity extends AppCompatActivity {
             startingLetterNumber = 1;
         }else if(currentCity.length() >= 8 && currentCity.length() < 10){
             startingLetterNumber = 2;
-        }else{
+        }else if(currentCity.length() >= 10){
             startingLetterNumber = 3;
+        }else{
+            startingLetterNumber = 0;
         }
 
         for(int i = 0; i < currentCity.length(); i++){
@@ -115,7 +105,34 @@ public class NormalGameActivity extends AppCompatActivity {
         }
 
         for (int c = 0; c < startingLetterNumber; c++){
-
+            takeRandomLetter();
         }
+
+        pointsToBreak = maxPoints / currentCityChar.size();
+        totalPoints = maxPoints;
+    }
+
+    private void takeRandomLetter(){
+        rndLetterNumber = rndLetter.nextInt(currentCityChar.size());
+        String[] txtLetters = txtAnswer.getText().toString().split(" ");
+        char[] currentCityLetters = currentCity.toCharArray();
+
+        for(int i = 0; i< currentCity.length(); i++){
+            if(txtLetters[i].equals("_") && currentCityLetters[i] == currentCityChar.get(rndLetterNumber)){
+                txtLetters[i] = String.valueOf(currentCityChar.get(rndLetterNumber));
+                txtAnswerString = "";
+
+                for(int j = 0; j < currentCity.length(); j++){
+                    if(j == i || j < currentCity.length() - 1){
+                        txtAnswerString += txtLetters[j] + " ";
+                    }else{
+                        txtAnswerString += txtLetters[j];
+                    }
+                }
+                break;
+            }
+        }
+        txtAnswer.setText(txtAnswerString);
+        currentCityChar.remove(rndLetterNumber);
     }
 }
