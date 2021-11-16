@@ -2,9 +2,12 @@ package tr.edu.mu.ceng.mad.name_city_game;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,9 +15,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class NormalGameActivity extends AppCompatActivity {
-    private TextView txtCity, txtAnswer, txtTotalPoints;
+public class AgainstTimeActivity extends AppCompatActivity {
+    private TextView txtCity, txtAnswer, txtTotalPoints, txtRemainingTime;
     private EditText editTextGuess;
+    private Button btnGuess, btnLetter, btnRestart;
     private String[] cities = {
             "adana", "adiyaman", "afyonkarahisar", "agri", "aksaray", "amasya", "ankara",
             "antalya", "ardahan", "artvin", "aydin", "balikesir", "bartin", "batman",
@@ -29,7 +33,7 @@ public class NormalGameActivity extends AppCompatActivity {
             "tekirdag", "tokat", "trabzon", "tunceli", "usak", "van", "yalova", "yozgat", "zonguldak"
     };
     private Random rndCity, rndLetter;
-    private int rndCityNumber, rndLetterNumber, startingLetterNumber;
+    private int rndCityNumber, rndLetterNumber, startingLetterNumber, totalTime = 60000;
     private String currentCity, txtAnswerString, editTextUserGuess;
     private ArrayList<Character> currentCityChar;
     private float maxPoints = 100.0f, pointsToBreak, totalPoints = 0, levelTotalPoints = 0;
@@ -37,24 +41,59 @@ public class NormalGameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_normal_game);
+        setContentView(R.layout.activity_against_time);
 
-        txtCity = findViewById(R.id.txtCity_normal);
-        txtAnswer = findViewById(R.id.txtAnswer_normal);
-        editTextGuess = findViewById(R.id.editTextGuess_normal);
-        txtTotalPoints = findViewById(R.id.txtTotalPoints_normal);
+        txtCity = findViewById(R.id.txtCity_time);
+        txtAnswer = findViewById(R.id.txtAnswer_time);
+        editTextGuess = findViewById(R.id.editTextGuess_time);
+        txtTotalPoints = findViewById(R.id.txtTotalPoints_time);
+        txtRemainingTime = findViewById(R.id.txtRemainingTime);
+        btnGuess = findViewById(R.id.btnGuess_time);
+        btnLetter = findViewById(R.id.btnLetter_time);
+        btnRestart = findViewById(R.id.btnRestart_time);
 
+        new CountDownTimer(totalTime, 1000) {
+            @Override
+            public void onTick(long l) {
+                txtRemainingTime.setText((l / 60000) + ":" + ((l % 60000)/1000));
+            }
+
+            @Override
+            public void onFinish() {
+                txtRemainingTime.setText("0:00");
+                btnGuess.setEnabled(false);
+                btnLetter.setEnabled(false);
+                editTextGuess.setEnabled(false);
+                btnRestart.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "Time is Over\nYou got " + levelTotalPoints + " points", Toast.LENGTH_SHORT).show();
+            }
+        }.start();
         rndLetter = new Random();
         createWord();
     }
 
+    public void btnRestart(View v){
+        Intent restart = new Intent(this, AgainstTimeActivity.class);
+        finish();
+        startActivity(restart);
+    }
 
-    public void btnGuess(View v){
+    public void btnLetter_time(View v){
+        if(currentCityChar.size() > 0){
+            takeRandomLetter();
+            totalPoints -= pointsToBreak;
+            Toast.makeText(AgainstTimeActivity.this, "Remaining points = " + totalPoints, Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getApplicationContext(), "No letters remaining", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void btnGuess_time(View v){
         editTextUserGuess = editTextGuess.getText().toString();
         if(!TextUtils.isEmpty(editTextUserGuess)){
             if(editTextUserGuess.equals(currentCity)){
                 levelTotalPoints += totalPoints;
-                Toast.makeText(NormalGameActivity.this, "Congratulations! Correct Answer", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AgainstTimeActivity.this, "Congratulations! Correct Answer", Toast.LENGTH_SHORT).show();
                 txtTotalPoints.setText("Total Points : " + levelTotalPoints);
                 editTextGuess.setText("");
                 createWord();
@@ -66,15 +105,6 @@ public class NormalGameActivity extends AppCompatActivity {
         }
     }
 
-    public void btnLetter(View v){
-        if(currentCityChar.size() > 0){
-            takeRandomLetter();
-            totalPoints -= pointsToBreak;
-            Toast.makeText(NormalGameActivity.this, "Remaining points = " + totalPoints, Toast.LENGTH_SHORT).show(); 
-        }else{
-            Toast.makeText(getApplicationContext(), "No letters remaining", Toast.LENGTH_SHORT).show();
-        }
-    }
     private void createWord(){
         txtAnswerString = "";
         rndCity = new Random();
@@ -137,4 +167,5 @@ public class NormalGameActivity extends AppCompatActivity {
         txtAnswer.setText(txtAnswerString);
         currentCityChar.remove(rndLetterNumber);
     }
+
 }

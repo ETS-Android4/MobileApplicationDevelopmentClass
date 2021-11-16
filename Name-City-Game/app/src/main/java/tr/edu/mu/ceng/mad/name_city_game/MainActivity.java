@@ -9,28 +9,47 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView txtTile;
-    private Button btnNormal;
-    private Button btnAgainstTime;
-    private Button btnExit;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
-        txtTile = findViewById(R.id.txtTitle);
-        btnNormal = findViewById(R.id.btnNormal);
-        btnAgainstTime = findViewById(R.id.btnAgainstTime);
-        btnExit = findViewById(R.id.btnExit);
+    public void btnMainPage(View v){
+        switch (v.getId()){
+            case R.id.btnNormal:
+                activitySurf("NormalGame");
+                break;
 
+            case R.id.btnAgainstTime:
+                activitySurf("AgainstTime");
+                break;
 
-        btnNormal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NormalGameActivity.class);
-                startActivity(intent);
-            }
-        });
+            case R.id.btnExit:
+                exit();
+                break;
+        }
+    }
+
+    private void activitySurf(String activityName){
+        if(activityName.equals("NormalGame"))
+            intent = new Intent(this,NormalGameActivity.class);
+        else
+            intent = new Intent(this,AgainstTimeActivity.class);
+
+        startActivity(intent);
+    }
+
+    private void exit(){
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        exit();
     }
 }

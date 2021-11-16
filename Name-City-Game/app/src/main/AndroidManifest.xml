@@ -10,11 +10,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NameCityGame">
         <activity
+            android:name=".AgainstTimeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".NormalGameActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
