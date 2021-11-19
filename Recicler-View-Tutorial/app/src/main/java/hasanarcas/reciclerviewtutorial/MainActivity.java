@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
@@ -23,6 +24,13 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Images images, int position) {
+                Toast.makeText(getApplicationContext(), images.getImageName(),Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 }

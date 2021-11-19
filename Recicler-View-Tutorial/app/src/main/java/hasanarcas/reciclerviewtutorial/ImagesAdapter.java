@@ -17,7 +17,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesHold
 
     private ArrayList<Images> imagesList;
     private Context context;
-    private View.OnClickListener listener;
+    private OnItemClickListener listener;
 
     public ImagesAdapter(ArrayList<Images> imagesList, Context context) {
         this.imagesList = imagesList;
@@ -52,6 +52,16 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesHold
             imageRate = (TextView) itemView.findViewById(R.id.image_item_TextViewImageRate);
             imagePic = (ImageView) itemView.findViewById(R.id.image_item_imageView);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+
+                    if(listener != null && position != RecyclerView.NO_POSITION)
+                        listener.onItemClick(imagesList.get(position), position);
+                }
+            });
+
         }
 
         public void setData(Images images){
@@ -61,8 +71,11 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesHold
         }
     }
 
-    public interface onItemClickListener{
+    public interface OnItemClickListener{
         void onItemClick(Images images, int position);
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
+    }
 }
