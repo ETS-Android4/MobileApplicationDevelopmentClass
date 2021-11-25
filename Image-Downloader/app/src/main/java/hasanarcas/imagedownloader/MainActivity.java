@@ -20,44 +20,42 @@ import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText txtURL;
+    EditText txtUrl;
     Button btnDownload;
     ImageView imgView;
-
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE,
+
+    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        txtURL = findViewById(R.id.txtURL);
+        txtUrl= findViewById(R.id.txtURL);
         btnDownload = findViewById(R.id.btnDownload);
         imgView = findViewById(R.id.imgView);
-
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 int permission = ActivityCompat.checkSelfPermission(
-                        MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if(permission != PackageManager.PERMISSION_GRANTED) {
+                        MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permission!= PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(MainActivity.this,
-                            PERMISSONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-                }else{
+                            PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
+                }else {
                     AsyncTask backgroundTask = new DownloadTask();
                     String[] urls = new String[1];
-                    urls[0] = txtURL.getText().toString();
+                    urls[0]=txtUrl.getText().toString();
                     backgroundTask.execute(urls);
                 }
 
@@ -68,60 +66,63 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_EXTERNAL_STORAGE){
-            if (grantResults.length == 2 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    AsyncTask backgroundTask = new DownloadTask();
-                    String[] urls = new String[1];
-                    urls[0] = txtURL.getText().toString();
-                    backgroundTask.execute(urls);
+        if (requestCode == REQUEST_EXTERNAL_STORAGE){
+            if (grantResults.length == 2 && grantResults[0] ==PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1]==PackageManager.PERMISSION_GRANTED) {
+                AsyncTask backgroundTask = new DownloadTask();
+                String[] urls = new String[1];
+                urls[0]=txtUrl.getText().toString();
+                backgroundTask.execute(urls);
             }
         }
-
     }
 
-    private void downloadFile(String urlStr, String imagePath) {
+    private void downloadFile(String strUrl, String imagePath) {
         try {
-            URL url = new URL(urlStr);
+            URL url = new URL(strUrl);
             URLConnection connection = url.openConnection();
             connection.connect();
-
-            InputStream is = new BufferedInputStream(url.openStream(), 8192);
+            InputStream is = new BufferedInputStream(url.openStream(),8192);
             OutputStream os = new FileOutputStream(imagePath);
 
             byte data[] = new byte[1024];
             int count;
-            while((count= is.read(data)) == -1){
-                os.write(data, 0, count);
+            while ((count=is.read()) != -1){
+                os.write(data,0,count);
             }
-
             os.flush();
             os.close();
             is.close();
+        }catch (Exception ex){
+            Log.e("downloadFile","Cannot download "+ strUrl,ex);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+
         }
-    }
 
-    class DownloadTask extends AsyncTask<String, Integer, Bitmap>{
+
+    }
+    public Bitmap scaleBitmap(String imagePath ){
+        Bitmap image = BitmapFactory.decodeFile(imagePath);
+        float w = image.getWidth();
+        float h = image.getHeight();
+        int W = 400;
+        int H = (int) ( (h*W)/w);
+        Bitmap b = Bitmap.createScaledBitmap(image, W, H, false);
+        return b;
+    }
+    class DownloadTask extends AsyncTask<String,Integer,Bitmap>{
 
         @Override
-        protected Bitmap doInBackground(String... strs) {
-            Log.d("Download Task", strs[0]);
-            String imagePath = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
-                    .toString() + "/temp.jpg";
-
-            downloadFile(strs[0], imagePath);
+        protected Bitmap doInBackground(String... urls) {
+            Log.d("Download Task",urls[0]);
+            String filename = "/temp.jpg";
+            String imagePath = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)).
+                    toString();
+            downloadFile(urls[0],imagePath + filename);
             Bitmap image = BitmapFactory.decodeFile(imagePath);
 
-            float w = image.getWidth();
-            float h = image.getHeight();
-            int W = 400;
-            int H = (int) ((h * W) / w);
-            Bitmap b = Bitmap.createScaledBitmap(image, W, H, false);
-            return b;
+            return scaleBitmap(imagePath + filename);
         }
 
         @Override
