@@ -1,10 +1,11 @@
 package hasanarcas.calculator_mvp;
 
-public interface CalculatorListener {
+import android.view.View;
+
+public interface CalculatorListener extends View.OnClickListener{
 
     int getResult();
-    void setOperand();
-    
-
+    void setOperand(String operand);
+    void setOperator(String operator);
 
 }

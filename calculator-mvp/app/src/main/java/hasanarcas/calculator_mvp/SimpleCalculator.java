@@ -1,17 +1,18 @@
 package hasanarcas.calculator_mvp;
 
 public class SimpleCalculator {
-    private int operand1;
-    private int operand2;
+    private Integer operand1;
+    private Integer operand2;
     private String operator;
 
     CalculatorListener listener;
+
 
     public SimpleCalculator(CalculatorListener listener) {
         this.listener = listener;
     }
 
-    public int getOperand1() {
+    public Integer getOperand1() {
         return operand1;
     }
 
@@ -19,7 +20,7 @@ public class SimpleCalculator {
         this.operand1 = operand1;
     }
 
-    public int getOperand2() {
+    public Integer getOperand2() {
         return operand2;
     }
 
@@ -34,4 +35,14 @@ public class SimpleCalculator {
     public void setOperator(String operator) {
         this.operator = operator;
     }
+
+    int setResult(){
+        if(operator == "+")
+            operand1 += operand2;
+        else
+            operand1-= operand2;
+        return operand1;
+    }
+
+
 }
