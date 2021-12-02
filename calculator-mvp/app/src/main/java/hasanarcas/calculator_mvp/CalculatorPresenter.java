@@ -19,7 +19,7 @@ public class CalculatorPresenter implements CalculatorListener, View.OnClickList
 
     @Override
     public void onResultCalculated(Integer operand1) {
-
+        view.setNumber(operand1 + "");
     }
 
     @Override
@@ -31,7 +31,6 @@ public class CalculatorPresenter implements CalculatorListener, View.OnClickList
                 calculator.setOperand(Integer.parseInt(view.getNumber()));
                 calculator.setOperator(symbol);
                 isFirstDigit = true;
-                return;
             }else if(symbol.equals("=")) {
                 calculator.setOperand(Integer.parseInt(view.getNumber()));
                 calculator.setOperator(symbol);
