@@ -22,18 +22,17 @@ import java.util.List;
 public class MyNoteRecyclerViewAdapter extends RecyclerView.Adapter<MyNoteRecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<Note> mValues;
-    private NoteFragment.OnNoteListInteractionListener mListener;
+    private NoteFragment.OnNoteListInteractionListener listener;
 
 
     public MyNoteRecyclerViewAdapter(ArrayList<Note> mValues, NoteFragment.OnNoteListInteractionListener mListener) {
         this.mValues = mValues;
-        this.mListener = mListener;
+        this.listener = mListener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,13 +41,12 @@ public class MyNoteRecyclerViewAdapter extends RecyclerView.Adapter<MyNoteRecycl
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mHeaderView.setText(mValues.get(position).getHeader());
-        holder.mDateView.setText((new SimpleDateFormat("yyyy-MM-dd")).
-                format(mValues.get(position).getDate()));
+        holder.mDateView.setText((new SimpleDateFormat("yyyy-MM-dd")).format(mValues.get(position).getDate()));
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
-                    mListener.onNoteSelected(holder.mItem);
+                if (null != listener) {
+                    listener.onNoteSelected(holder.mItem);
                 }
             }
         });

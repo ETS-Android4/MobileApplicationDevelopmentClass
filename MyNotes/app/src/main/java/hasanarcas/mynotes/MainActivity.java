@@ -1,9 +1,9 @@
 package hasanarcas.mynotes;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MainActivity extends Activity implements NoteFragment.OnNoteListInteractionListener {
+public class MainActivity extends AppCompatActivity implements NoteFragment.OnNoteListInteractionListener {
     boolean displayingEditor = false;
     Note editingNote;
     ArrayList<Note> notes;
@@ -33,11 +33,11 @@ public class MainActivity extends Activity implements NoteFragment.OnNoteListInt
         notes = retrieveNotes();
         Log.d("onCreate", "Note Count = " + notes.size());
         if (!displayingEditor) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, NoteFragment.newInstance(notes));
             ft.commit();
         } else {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.container, EditNoteFragment.newInstance(readContent(editingNote)));
             ft.addToBackStack(null);
             ft.commit();
@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements NoteFragment.OnNoteListInt
             case R.id.action_new:
                 editingNote = createNote();
                 notes.add(editingNote);
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.container, EditNoteFragment.newInstance(""), "edit_note");
                 ft.addToBackStack(null);
                 ft.commit();
@@ -74,8 +74,7 @@ public class MainActivity extends Activity implements NoteFragment.OnNoteListInt
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.d("onPrepareOptionsMenu new visible",
-                menu.findItem(R.id.action_new).isVisible() + "");
+        Log.d("onPrepareOptionsMenu new visible", menu.findItem(R.id.action_new).isVisible() + "");
         menu.findItem(R.id.action_new).setVisible(!displayingEditor);
         menu.findItem(R.id.action_close).setVisible(displayingEditor);
         return super.onPrepareOptionsMenu(menu);
@@ -101,7 +100,7 @@ public class MainActivity extends Activity implements NoteFragment.OnNoteListInt
 
     @Override
     public void onBackPressed() {
-        EditNoteFragment editFragment = (EditNoteFragment) getFragmentManager().findFragmentByTag("edit_note");
+        EditNoteFragment editFragment = (EditNoteFragment) getSupportFragmentManager().findFragmentByTag("edit_note");
         if (editFragment != null) {
             String content = editFragment.getContent();
             saveContent(editingNote, content);
@@ -112,7 +111,7 @@ public class MainActivity extends Activity implements NoteFragment.OnNoteListInt
     @Override
     public void onNoteSelected(Note note) {
         editingNote = note;
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, EditNoteFragment.newInstance(readContent(editingNote)), "edit _note");
                 ft.addToBackStack(null);
         ft.commit();
