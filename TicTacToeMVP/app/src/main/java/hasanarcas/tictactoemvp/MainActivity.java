@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements BoardView{
             for(byte col = 0; col < 3; col++){
                 Button btn = (Button) tableRow.getChildAt(col);
                 btn.setOnClickListener(new BoardPresenter.CellClickListener(presenter, row, col));
-            }
+        }
         }
         
     }
