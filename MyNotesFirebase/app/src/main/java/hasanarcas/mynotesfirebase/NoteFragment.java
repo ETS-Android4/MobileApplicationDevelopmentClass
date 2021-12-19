@@ -13,18 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hasanarcas.mynotesfirebase.placeholder.PlaceholderContent;
 
-/**
- * A fragment representing a list of Items.
- */
 public class NoteFragment extends Fragment {
     private OnNoteListInteractionListener mListener;
     RecyclerView recyclerView;
     public NoteFragment() {}
-    public static NoteFragment newInstance() {
+    public static NoteFragment newInstance(ArrayList<Note> notes) {
         NoteFragment fragment = new NoteFragment();
         return fragment;
     }
@@ -53,16 +51,13 @@ public class NoteFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-    /**
-     * Interface for listing note operations in the list
-     */
+
     public interface OnNoteListInteractionListener {
         void onNoteSelected(Note item);
     }
     public void updateNotes(List<Note> notes){
         Log.d("Fragment" , "updateNotes");
-        recyclerView.setLayoutManager(new
-                LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(new MyNoteRecyclerViewAdapter(notes, mListener));
     }
 }

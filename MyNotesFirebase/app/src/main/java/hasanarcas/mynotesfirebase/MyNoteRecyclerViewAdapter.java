@@ -14,8 +14,7 @@ import hasanarcas.mynotesfirebase.databinding.FragmentNoteBinding;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class MyNoteRecyclerViewAdapter extends
-        RecyclerView.Adapter<MyNoteRecyclerViewAdapter.ViewHolder> {
+public class MyNoteRecyclerViewAdapter extends RecyclerView.Adapter<MyNoteRecyclerViewAdapter.ViewHolder> {
     private final List<Note> mValues;
     private final NoteFragment.OnNoteListInteractionListener mListener;
     public MyNoteRecyclerViewAdapter(List<Note> notes,
@@ -35,8 +34,7 @@ public class MyNoteRecyclerViewAdapter extends
         String content = mValues.get(position).getContent();
         String header = content.length() < 30 ? content : content.substring(0,30);
         holder.mHeaderView.setText(header.replaceAll("\n", " "));
-        holder.mDateView.setText((new SimpleDateFormat("yyyy-MM-dd")).
-                format(mValues.get(position).getDate().toString()));
+        holder.mDateView.setText((new SimpleDateFormat("yyyy-MM-dd")).format(mValues.get(position).getDate().toDate()));
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

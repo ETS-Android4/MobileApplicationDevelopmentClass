@@ -1,18 +1,25 @@
 package hasanarcas.mynotesfirebase;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements NoteFragment.OnNo
 
         if (!displayingEditor){
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.container,NoteFragment.newInstance(),"list_note");
+            ft.add(R.id.container,NoteFragment.newInstance(notes),"list_note");
             ft.commit();
         }else {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -40,6 +47,23 @@ public class MainActivity extends AppCompatActivity implements NoteFragment.OnNo
             ft.addToBackStack(null);
             ft.commit();
         }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("notes").orderBy("date", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(error != null){
+                    Log.e("Firebase","error retrieving notes", error);
+                    return;
+                }
+                notes.clear();
+                for(QueryDocumentSnapshot doc : value){
+                    notes.add(doc.toObject(Note.class));
+                }
+                NoteFragment listFragment = (NoteFragment) getSupportFragmentManager().findFragmentByTag("list_note");
+                listFragment.updateNotes(notes);
+            }
+        });
 
     }
 
