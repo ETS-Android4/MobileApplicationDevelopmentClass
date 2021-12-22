@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "662688138023",
+    "project_id": "mynotesfirebase-f2b18",
+    "storage_bucket": "mynotesfirebase-f2b18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662688138023:android:e10f72472daa2d91119f02",
+        "android_client_info": {
+          "package_name": "hasanarcas.mynotesfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "662688138023-1o8i3ae121uho16tlpjh2e3r2q9vidvo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdjKfSLas-s-DBLXIj3h-Tf4juwRnYbn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "662688138023-1o8i3ae121uho16tlpjh2e3r2q9vidvo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662688138023:android:7266efeb90dc87de119f02",
+        "android_client_info": {
+          "package_name": "hasanarcas.storagetrial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "662688138023-1o8i3ae121uho16tlpjh2e3r2q9vidvo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdjKfSLas-s-DBLXIj3h-Tf4juwRnYbn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "662688138023-1o8i3ae121uho16tlpjh2e3r2q9vidvo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
