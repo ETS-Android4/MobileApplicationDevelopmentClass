@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference image1 = storageRef.child("new_released_games/ archvale .jpg");
-
         Glide.with(this ).load(image1).into(image);
 
     }
