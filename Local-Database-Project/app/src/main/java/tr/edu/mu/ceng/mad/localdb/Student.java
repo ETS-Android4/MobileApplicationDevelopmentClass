@@ -49,4 +49,14 @@ public class Student {
     public void setYear(int year) {
         this.year = year;
     }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "studentId=" + studentId +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", year=" + year +
+                '}';
+    }
 }
