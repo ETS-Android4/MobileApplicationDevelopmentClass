@@ -14,9 +14,12 @@ import android.widget.ProgressBar;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
@@ -44,47 +47,25 @@ public class MainActivity extends AppCompatActivity {
         progressBar=findViewById(R.id.progress);
         progressBar.setVisibility(View.VISIBLE);
         StorageReference listRef = FirebaseStorage.getInstance().getReference().child("new_released_games");
-        download(listRef);
+        //download(listRef, "demeo");
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        DocumentReference ref = firestore.collection("games").document("game_properties");
-        ArrayList<String[]> list = new ArrayList<>();
-        ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        CollectionReference ref = firestore.collection("games");
+        ref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    DocumentSnapshot document = task.getResult();
-                    if(document.exists()){
-                        String text = document.getString("content");
-                        try {
-                            CSVReader csvReader = new CSVReader(new FileReader(text));
-                            while(csvReader.readNext() != null){
-                                list.add(csvReader.readNext());
-                            }
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (CsvValidationException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    else{
-                        Log.d("1111111", "no document..........");
-                    }
-                }
-                else{
-                    Log.d("11111111", "get failed with " + task.getException());
-                }
-                for(String[] e : list){
-                    Log.d("111111111", String.valueOf(e));
-                    //System.out.println(e);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for(QueryDocumentSnapshot document : task.getResult()){
+                    //Log.d("11111111", "== >" + document.getData().get("name"));
+                    String formattedName = ((String) document.getData().get("name")).replaceAll(" ", "-").replaceAll(":", "").replaceAll("'","");
+                    Log.d("Name of the game:", "====>>" + formattedName);
+                    //download(listRef, formattedName);
                 }
             }
         });
+
     }
 
-    public void download(StorageReference listRef){
+    public void download(StorageReference listRef, String formattedName){
         listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
@@ -92,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     file.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            if(uri.toString().contains("demeo")){
+                            if(uri.toString().contains(formattedName)){
                                 imagelist.add(uri.toString());
                                 Log.e("Itemvalue","" + uri.toString());
                             }
