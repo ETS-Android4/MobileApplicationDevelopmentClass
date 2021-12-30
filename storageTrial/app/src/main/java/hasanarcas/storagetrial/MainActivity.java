@@ -1,6 +1,7 @@
 package hasanarcas.storagetrial;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,11 +14,14 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -30,12 +34,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<String> imagelist;
     RecyclerView recyclerView;
     ProgressBar progressBar;
     ImageAdapter adapter;
+    StorageReference listRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,48 +53,42 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(null));
         progressBar=findViewById(R.id.progress);
         progressBar.setVisibility(View.VISIBLE);
-        StorageReference listRef = FirebaseStorage.getInstance().getReference().child("new_released_games");
-        //download(listRef, "demeo");
+        listRef = FirebaseStorage.getInstance().getReference();
+        ArrayList<String> names = new ArrayList<>();
+        names.add("the-darkside-detective-a-fumble-in-the-dark");
+        names.add("shadow-tactics-blades-of-the-shogun---aikos-choice");
+        names.add("griftlands");
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference ref = firestore.collection("games");
-        ref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for(QueryDocumentSnapshot document : task.getResult()){
-                    //Log.d("11111111", "== >" + document.getData().get("name"));
-                    String formattedName = ((String) document.getData().get("name")).replaceAll(" ", "-").replaceAll(":", "").replaceAll("'","");
-                    Log.d("Name of the game:", "====>>" + formattedName);
-                    //download(listRef, formattedName);
+            ref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    for(QueryDocumentSnapshot document : task.getResult()){
+                        String formattedName = ((String) document.getData().get("name")).replaceAll(" ", "-").replaceAll(":", "").replaceAll("'","").toLowerCase();
+                        Log.e("111111111", formattedName);
+                        if(names.contains(formattedName)){
+                            download(formattedName);
+                        }
+                    }
                 }
-            }
-        });
-
+            });
     }
-
-    public void download(StorageReference listRef, String formattedName){
-        listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+    public void download(String gameName){
+        StorageReference imgReference = listRef.child("new_released_games/ " + gameName + " .jpg" );
+        imgReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onSuccess(ListResult listResult) {
-                for(StorageReference file:listResult.getItems()){
-                    file.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            if(uri.toString().contains(formattedName)){
-                                imagelist.add(uri.toString());
-                                Log.e("Itemvalue","" + uri.toString());
-                            }
-
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            recyclerView.setAdapter(adapter);
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    });
-                }
+            public void onSuccess(Uri uri) {
+                imagelist.add(uri.toString());
+                Log.e("111111111111",uri.toString());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                recyclerView.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);
             }
         });
+
     }
 }
